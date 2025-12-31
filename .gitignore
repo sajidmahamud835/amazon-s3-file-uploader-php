@@ -1,0 +1,6 @@
+vendor/
+.env
+php
+php.tar.gz
+composer.phar
+composer-setup.php
