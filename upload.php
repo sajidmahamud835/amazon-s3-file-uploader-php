@@ -105,23 +105,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         form { border: 1px solid #ddd; padding: 2rem; border-radius: 8px; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
         input[type="file"] { margin-bottom: 1rem; display: block; }
-        button { background-color: #007bff; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
+        button { background-color: #007bff; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: background-color 0.2s; }
+        button:hover:not(:disabled) { background-color: #0056b3; }
+        button:disabled { background-color: #93c5fd; cursor: not-allowed; }
+        .spinner {
+            width: 1em; height: 1em; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <h1>Upload File to S3</h1>
 
     <?php if ($message): ?>
-        <div class="message <?php echo strpos($message, 'Success') !== false ? 'success' : 'error'; ?>">
+        <div class="message <?php echo strpos($message, 'Success') !== false ? 'success' : 'error'; ?>" role="alert">
             <?php echo htmlspecialchars($message); ?>
         </div>
     <?php endif; ?>
 
-    <form action="" method="post" enctype="multipart/form-data">
+    <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
         <label for="file">Select file to upload (Max 5MB):</label>
-        <input type="file" name="file" id="file" required>
-        <button type="submit">Upload</button>
+        <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help">
+        <small id="file-help" style="display: block; margin-bottom: 1rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
+
+        <button type="submit" id="submitBtn">
+            <span class="spinner" id="spinner"></span>
+            <span id="btnText">Upload</span>
+        </button>
     </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('submitBtn');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btnText');
+            const fileInput = document.getElementById('file');
+
+            // Client-side size check
+            if (fileInput.files.length > 0) {
+                const fileSize = fileInput.files[0].size;
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (fileSize > maxSize) {
+                    e.preventDefault();
+                    alert('File is too large. Max 5MB.');
+                    return;
+                }
+            }
+
+            // Show loading state
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+            btnText.textContent = 'Uploading...';
+        });
+    </script>
 </body>
 </html>
