@@ -58,7 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                 // 5. Upload to S3
                 try {
                     $s3 = new S3Client([
-                        'version' => 'latest',
+                        // Optimization: Use specific version instead of 'latest' to avoid lookup overhead
+                        'version' => '2006-03-01',
                         'region'  => $region,
                         'credentials' => [
                             'key'    => $accessKeyId,
