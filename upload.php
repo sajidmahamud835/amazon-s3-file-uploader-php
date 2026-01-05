@@ -124,6 +124,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         </div>
     <?php endif; ?>
 
+    <!-- Client-side error container for better accessibility -->
+    <div id="client-message" class="message error" style="display: none;" role="alert" aria-live="assertive"></div>
+
     <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
         <label for="file">Select file to upload (Max 5MB):</label>
         <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help">
@@ -136,22 +139,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     </form>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            const btn = document.getElementById('submitBtn');
-            const spinner = document.getElementById('spinner');
-            const btnText = document.getElementById('btnText');
-            const fileInput = document.getElementById('file');
+        const fileInput = document.getElementById('file');
+        const clientMessage = document.getElementById('client-message');
+        const submitBtn = document.getElementById('submitBtn');
 
-            // Client-side size check
+        function validateFile() {
+            clientMessage.style.display = 'none';
+            clientMessage.textContent = '';
+            submitBtn.disabled = false;
+
             if (fileInput.files.length > 0) {
                 const fileSize = fileInput.files[0].size;
                 const maxSize = 5 * 1024 * 1024; // 5MB
+
                 if (fileSize > maxSize) {
-                    e.preventDefault();
-                    alert('File is too large. Max 5MB.');
-                    return;
+                    clientMessage.textContent = 'File is too large. Max 5MB.';
+                    clientMessage.style.display = 'block';
+                    // Reset input value so they can't submit
+                    fileInput.value = '';
+                    return false;
                 }
             }
+            return true;
+        }
+
+        // Validate on change for immediate feedback
+        fileInput.addEventListener('change', validateFile);
+
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            if (!validateFile()) {
+                e.preventDefault();
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btnText');
 
             // Show loading state
             btn.disabled = true;
