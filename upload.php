@@ -113,6 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             width: 1em; height: 1em; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .validation-message { margin-bottom: 1rem; font-size: 0.9em; display: none; padding: 0.5rem; border-radius: 4px; }
+        .validation-message.active { display: block; }
     </style>
 </head>
 <body>
@@ -129,6 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help">
         <small id="file-help" style="display: block; margin-bottom: 1rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
 
+        <div id="client-feedback" class="validation-message error" aria-live="polite"></div>
+
         <button type="submit" id="submitBtn">
             <span class="spinner" id="spinner"></span>
             <span id="btnText">Upload</span>
@@ -136,11 +140,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     </form>
 
     <script>
+        const fileInput = document.getElementById('file');
+        const feedback = document.getElementById('client-feedback');
+
+        fileInput.addEventListener('change', function() {
+            // Clear errors when file changes
+            feedback.classList.remove('active');
+            feedback.textContent = '';
+        });
+
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             const btn = document.getElementById('submitBtn');
             const spinner = document.getElementById('spinner');
             const btnText = document.getElementById('btnText');
-            const fileInput = document.getElementById('file');
+
+            // Reset feedback
+            feedback.classList.remove('active');
+            feedback.textContent = '';
 
             // Client-side size check
             if (fileInput.files.length > 0) {
@@ -148,7 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                 const maxSize = 5 * 1024 * 1024; // 5MB
                 if (fileSize > maxSize) {
                     e.preventDefault();
-                    alert('File is too large. Max 5MB.');
+                    feedback.textContent = 'File is too large. Max 5MB.';
+                    feedback.classList.add('active');
                     return;
                 }
             }
