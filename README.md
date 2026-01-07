@@ -1,50 +1,99 @@
-# CloudFlow - Modern S3 File Uploader (PHP)
+# CloudFlow S3 Uploader
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sajidmahamud835/amazon-s3-file-uploader-php)
+[![PHP 8.2](https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A secure, modern, and beautifully designed file uploader for Amazon S3, built with PHP 8.2 and the AWS SDK.
+A secure, production-ready file uploader for Amazon S3 with a premium Glassmorphism UI, built for researchers and developers exploring cloud storage integration patterns.
 
-## Features
+---
 
-*   **Premium Glassmorphism UI:** Stunning visual design with animations and responsiveness.
-*   **Drag & Drop:** Intuitive file selection with drag and drop support.
-*   **Instant Previews:** Client-side image previews before uploading.
-*   **Demo Mode:** No AWS credentials? Users can enter their own for testing.
-*   **Secure:** CSRF protection, MIME validation, env-based configuration.
-*   **Containerized:** Docker & Render support for easy deployment.
+## 📚 Academic Context
 
-## Demo Mode
+This project serves as a **reference implementation** for studying:
+- **Cloud Storage Patterns**: Direct-to-S3 upload workflows with presigned URLs vs server-side proxy
+- **Security Best Practices**: CSRF protection, MIME validation, session-based credential handling
+- **Modern PHP Architecture**: PSR-4 autoloading, MVC-like separation, environment-based configuration
+- **UX Engineering**: Drag & Drop interfaces, inline validation, and progressive enhancement
 
-If no AWS credentials are configured in the environment, the app will display a form where users can enter their own credentials for testing. **Credentials are stored in session only** and are never persisted or logged.
+---
 
-## Quick Start
+## ✨ Features
 
-### Deploy to Render (One-Click)
+| Category | Details |
+|----------|---------|
+| **UI/UX** | Glassmorphism design, Drag & Drop, instant previews, responsive layout |
+| **Security** | CSRF tokens, MIME type validation, file size limits, no credential storage |
+| **Demo Mode** | Users can enter their own AWS credentials when env vars are missing |
+| **Architecture** | PSR-4 autoloading, `src/` class structure, template separation |
+| **DevOps** | Docker, docker-compose, Render Blueprint (`render.yaml`) |
 
-Click the button above to deploy instantly to Render. Leave environment variables empty for demo mode.
+---
+
+## 🚀 Quick Start
+
+### One-Click Deploy (Render)
+Click the badge above. Leave env vars empty for **demo mode**.
 
 ### Local (Docker)
-
 ```bash
 git clone https://github.com/sajidmahamud835/amazon-s3-file-uploader-php.git
 cd amazon-s3-file-uploader-php
-cp .env.example .env  # Edit with your AWS credentials, or leave empty for demo mode
+cp .env.example .env  # Or leave empty for demo mode
 docker-compose up -d --build
+# Open http://localhost:8080
 ```
-Open `http://localhost:8080`.
 
 ### Local (PHP)
-
 ```bash
 composer install
-cd public
-php -S localhost:8000
+cd public && php -S localhost:8000
+# Open http://localhost:8000
 ```
-Open `http://localhost:8000`.
 
-## Directory Structure
+---
 
-*   `src/`: Core PHP logic (Config, S3Uploader).
-*   `public/`: Entry point and assets.
-*   `templates/`: HTML views.
-*   `Dockerfile`, `docker-compose.yml`, `render.yaml`: DevOps configs.
+## 📁 Technical Architecture
+
+```
+amazon-s3-file-uploader-php/
+├── src/
+│   ├── Config.php         # Environment & session credential handling
+│   └── S3Uploader.php     # AWS SDK wrapper with validation
+├── public/
+│   ├── index.php          # Entry point (controller logic)
+│   └── assets/            # CSS (Glassmorphism) & JS (Drag/Drop)
+├── templates/
+│   ├── layout.php         # Base HTML with animated background
+│   ├── upload_form.php    # Main upload UI
+│   └── config_form.php    # Demo mode credential input
+├── Dockerfile
+├── docker-compose.yml
+└── render.yaml            # Render Blueprint
+```
+
+---
+
+## 📋 Research & Development Plan (Todo)
+
+- [ ] Add AJAX-based upload with real progress bar
+- [ ] Implement presigned URL pattern for direct browser-to-S3 uploads
+- [ ] Add multi-file upload support
+- [ ] Integrate object lifecycle policies display
+- [ ] Add download URL generation with expiry
+
+---
+
+## 🔗 Related Projects
+
+- **[EasyCom](https://github.com/sajidmahamud835/easycom)**: E-commerce platform with similar modern UI patterns
+- **[BankSync](https://github.com/sajidmahamud835/banksync)**: FinTech app demonstrating secure credential management
+- **[Developer Portfolio](https://github.com/sajidmahamud835/developer-portfolio)**: Zero-dependency SPA with custom physics engine
+
+---
+
+## 📜 License
+
+MIT License - See [LICENSE](LICENSE) for details.
+
+*Part of [Sajid Mahamud's Project Portfolio](https://github.com/sajidmahamud835)*
