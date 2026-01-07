@@ -113,6 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             width: 1em; height: 1em; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        #preview-container { margin-top: 1rem; margin-bottom: 1rem; }
+        #preview-container img { max-width: 100%; max-height: 200px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -126,8 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
     <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
         <label for="file">Select file to upload (Max 5MB):</label>
-        <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help">
-        <small id="file-help" style="display: block; margin-bottom: 1rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
+        <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help error-container">
+        <small id="file-help" style="display: block; margin-bottom: 0.5rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
+
+        <div id="error-container" class="error" role="alert" style="display: none; margin-bottom: 1rem;"></div>
+        <div id="preview-container" aria-live="polite"></div>
 
         <button type="submit" id="submitBtn">
             <span class="spinner" id="spinner"></span>
@@ -136,22 +141,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     </form>
 
     <script>
+        const fileInput = document.getElementById('file');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorContainer = document.getElementById('error-container');
+        const previewContainer = document.getElementById('preview-container');
+
+        fileInput.addEventListener('change', function() {
+            // Reset state
+            errorContainer.style.display = 'none';
+            errorContainer.textContent = '';
+            previewContainer.innerHTML = '';
+            submitBtn.disabled = false;
+
+            if (this.files.length === 0) return;
+
+            const file = this.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            // Validate Size
+            if (file.size > maxSize) {
+                errorContainer.textContent = 'File is too large (Max 5MB). Please select a smaller file.';
+                errorContainer.style.display = 'block';
+                this.value = ''; // Clear the input
+                return; // Stop here
+            }
+
+            // Image Preview
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'File preview';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             const btn = document.getElementById('submitBtn');
             const spinner = document.getElementById('spinner');
             const btnText = document.getElementById('btnText');
-            const fileInput = document.getElementById('file');
-
-            // Client-side size check
-            if (fileInput.files.length > 0) {
-                const fileSize = fileInput.files[0].size;
-                const maxSize = 5 * 1024 * 1024; // 5MB
-                if (fileSize > maxSize) {
-                    e.preventDefault();
-                    alert('File is too large. Max 5MB.');
-                    return;
-                }
-            }
 
             // Show loading state
             btn.disabled = true;
