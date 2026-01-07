@@ -2,6 +2,8 @@
 
 require 'vendor/autoload.php';
 
+session_start();
+
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 use Dotenv\Dotenv;
@@ -20,9 +22,17 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
     die("Error: AWS credentials or bucket name missing from .env configuration.");
 }
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("Error: CSRF validation failed.");
+    }
+
     $file = $_FILES['file'];
 
     // 1. Validation: Check for upload errors
@@ -125,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     <?php endif; ?>
 
     <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <label for="file">Select file to upload (Max 5MB):</label>
         <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help">
         <small id="file-help" style="display: block; margin-bottom: 1rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
