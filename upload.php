@@ -36,7 +36,6 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
 $message = '';
 
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     // Validate CSRF Token
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
