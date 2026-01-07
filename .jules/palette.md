@@ -1,3 +1,5 @@
-## 2024-05-22 - Inline Validation & Preview Pattern
-**Learning:** Users find blocking `alert()` dialogs disruptive and poor UX. Replacing them with immediate inline validation upon file selection significantly improves the flow. Adding a visual preview for images ("delight") confirms the user's selection before they commit to uploading.
-**Action:** When implementing file inputs, always use the `change` event to validate constraints (size/type) immediately and provide a visual preview if the file type allows (images). Use `aria-live="polite"` for the error container to ensure screen readers announce the validation error without stealing focus.
+# Palette's Journal
+
+## 2024-05-22 - Immediate Feedback vs Alerts
+**Learning:** `alert()` blocks user interaction and is jarring. Inline validation with visual previews provides immediate, non-blocking feedback that confirms user intent (correct file) and constraints (size limit) before they even try to submit.
+**Action:** Replace blocking alerts with aria-live regions and visual previews for file inputs.
