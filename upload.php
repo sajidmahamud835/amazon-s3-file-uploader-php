@@ -133,6 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             width: 1em; height: 1em; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        /* Palette Enhancements */
+        #file-feedback { margin-bottom: 1rem; }
+        .feedback-error { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; font-weight: bold; }
+        .preview-container { margin-top: 0.5rem; }
+        .preview-image { max-width: 150px; max-height: 150px; border-radius: 4px; border: 1px solid #dee2e6; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -148,7 +153,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <label for="file">Select file to upload (Max 5MB):</label>
         <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help">
-        <small id="file-help" style="display: block; margin-bottom: 1rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
+        <small id="file-help" style="display: block; margin-bottom: 0.5rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
+
+        <!-- Palette: Immediate feedback container -->
+        <div id="file-feedback" aria-live="polite"></div>
 
         <button type="submit" id="submitBtn">
             <span class="spinner" id="spinner"></span>
@@ -157,25 +165,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     </form>
 
     <script>
+        const fileInput = document.getElementById('file');
+        const feedback = document.getElementById('file-feedback');
+        const submitBtn = document.getElementById('submitBtn');
+
+        fileInput.addEventListener('change', function() {
+            feedback.innerHTML = ''; // Clear previous
+            submitBtn.disabled = false;
+
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+
+                // Validation
+                if (file.size > maxSize) {
+                    feedback.innerHTML = '<div class="feedback-error">⚠️ File is too large (Max 5MB).</div>';
+                    submitBtn.disabled = true;
+                    this.setAttribute('aria-invalid', 'true');
+                    // Clear the file input so they can't submit it by enabling button via devtools easily?
+                    // No, keeping it is fine as we disable button.
+                    return;
+                }
+                this.setAttribute('aria-invalid', 'false');
+
+                // Preview (if image)
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-image';
+                        img.alt = 'Preview: ' + file.name;
+                        const container = document.createElement('div');
+                        container.className = 'preview-container';
+                        container.appendChild(img);
+                        feedback.appendChild(container);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Non-image feedback
+                    const info = document.createElement('div');
+                    info.className = 'preview-container';
+                    info.style.color = '#0056b3';
+                    info.textContent = '📄 Ready to upload: ' + file.name;
+                    feedback.appendChild(info);
+                }
+            }
+        });
+
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            const btn = document.getElementById('submitBtn');
             const spinner = document.getElementById('spinner');
             const btnText = document.getElementById('btnText');
-            const fileInput = document.getElementById('file');
 
-            // Client-side size check
+            // Re-check size just in case (though button should be disabled)
             if (fileInput.files.length > 0) {
-                const fileSize = fileInput.files[0].size;
-                const maxSize = 5 * 1024 * 1024; // 5MB
-                if (fileSize > maxSize) {
+                if (fileInput.files[0].size > 5 * 1024 * 1024) {
                     e.preventDefault();
-                    alert('File is too large. Max 5MB.');
                     return;
                 }
             }
 
             // Show loading state
-            btn.disabled = true;
+            submitBtn.disabled = true;
             spinner.style.display = 'inline-block';
             btnText.textContent = 'Uploading...';
         });
