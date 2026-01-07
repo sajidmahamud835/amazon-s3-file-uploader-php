@@ -67,7 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                 'text/plain' => 'txt'
             ];
 
-            if (!in_array($mimeType, array_keys($allowedMimeTypes))) {
+            // Optimization: Use isset() for O(1) lookup instead of in_array(array_keys()) which is O(n) + allocation
+            if (!isset($allowedMimeTypes[$mimeType])) {
                 $message = "Error: Invalid file type ($mimeType). Allowed: JPG, PNG, GIF, PDF, TXT.";
             } else {
                 // 4. Sanitization: Generate unique filename
