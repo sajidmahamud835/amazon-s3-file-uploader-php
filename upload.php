@@ -24,6 +24,10 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
     die("Error: AWS credentials or bucket name missing from .env configuration.");
 }
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $message = '';
 
 if (empty($_SESSION['csrf_token'])) {
@@ -31,7 +35,6 @@ if (empty($_SESSION['csrf_token'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-<<<<<<< HEAD
     // Validate CSRF Token
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         die("Error: Invalid CSRF token.");
