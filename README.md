@@ -1,14 +1,25 @@
-# Amazon S3 File Uploader (PHP)
+# CloudFlow - Modern S3 File Uploader (PHP)
 
-This utility allows you to securely upload files to Amazon S3 using PHP 8.2+ and the AWS SDK for PHP v3.
+A secure, modern, and beautifully designed file uploader for Amazon S3, built with PHP 8.2 and the AWS SDK.
+
+## Features
+
+*   **Premium Glassmorphism UI:** Stunning visual design with animations and responsiveness.
+*   **Drag & Drop:** Intuitive file selection with drag and drop support.
+*   **Instant Previews:** Client-side image previews before uploading.
+*   **Secure:**
+    *   CSRF Protection.
+    *   Strict MIME type and file size validation.
+    *   Environment-based configuration.
+*   **Containerized:** Docker support for easy deployment.
+*   **Clean Architecture:** Refactored into a structured MVC-like pattern.
 
 ## Prerequisites
 
-*   **PHP 8.2** or higher
-*   **Composer** (for dependency management)
-*   An **AWS Account** with an S3 Bucket and IAM User credentials.
+*   **Docker** (Recommended)
+*   *OR* **PHP 8.2+** and **Composer**
 
-## Setup
+## Quick Start (Docker)
 
 1.  **Clone the repository:**
     ```bash
@@ -16,40 +27,40 @@ This utility allows you to securely upload files to Amazon S3 using PHP 8.2+ and
     cd amazon-s3-file-uploader-php
     ```
 
-2.  **Install Dependencies:**
+2.  **Configure Environment:**
+    ```bash
+    cp .env.example .env
+    # Edit .env with your AWS Credentials
+    ```
+
+3.  **Run with Docker Compose:**
+    ```bash
+    docker-compose up -d --build
+    ```
+
+4.  **Open Browser:**
+    Navigate to `http://localhost:8080`.
+
+## Manual Setup (Without Docker)
+
+1.  **Install Dependencies:**
     ```bash
     composer install
     ```
 
-3.  **Configure Environment:**
-    *   Copy the example environment file:
-        ```bash
-        cp .env.example .env
-        ```
-    *   Edit `.env` and add your AWS credentials:
-        ```ini
-        AWS_BUCKET=your_bucket_name
-        AWS_REGION=us-east-1
-        AWS_ACCESS_KEY_ID=your_access_key
-        AWS_SECRET_ACCESS_KEY=your_secret_key
-        ```
-    *   **Security Note:** Never commit your `.env` file to version control. It is already ignored in `.gitignore`.
+2.  **Run Built-in Server:**
+    ```bash
+    cd public
+    php -S localhost:8000
+    ```
+    *Note: The document root is now the `public/` directory.*
 
-## Running the Application
+3.  **Open Browser:**
+    Navigate to `http://localhost:8000`.
 
-You can run the built-in PHP server for testing:
+## Directory Structure
 
-```bash
-php -S localhost:8000
-```
-
-Open your browser and navigate to `http://localhost:8000/upload.php`.
-
-## Security Features
-
-*   **CSRF Protection:** Implements session-based tokens to prevent cross-site request forgery.
-*   **MIME Type Validation:** Verifies the actual file type (not just extension).
-*   **File Size Limit:** Enforces a 5MB maximum upload size.
-*   **Filename Sanitization:** Generates a unique filename (`uniqid`) to prevent overwrites and directory traversal attacks.
-*   **Secure Credentials:** Uses environment variables; no hardcoded keys.
-*   **Error Handling:** Catches AWS exceptions and hides stack traces from the user.
+*   `src/`: Core PHP logic (Config, S3Uploader).
+*   `public/`: Public entry entry point and assets.
+*   `templates/`: HTML views.
+*   `Dockerfile` & `docker-compose.yml`: DevOps configuration.
