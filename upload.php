@@ -155,6 +155,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         <!-- Palette: Immediate feedback container -->
         <div id="file-feedback" aria-live="polite"></div>
 
+        <div id="client-feedback" class="validation-message error" aria-live="polite"></div>
+
         <button type="submit" id="submitBtn">
             <span class="spinner" id="spinner"></span>
             <span id="btnText">Upload</span>
@@ -212,10 +214,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             const spinner = document.getElementById('spinner');
             const btnText = document.getElementById('btnText');
 
+
             // Re-check size just in case (though button should be disabled)
             if (fileInput.files.length > 0) {
                 if (fileInput.files[0].size > 5 * 1024 * 1024) {
                     e.preventDefault();
+
                     return;
                 }
             }
