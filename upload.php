@@ -8,8 +8,6 @@ require 'vendor/autoload.php';
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 
-
-
 // Generate CSRF Token if not exists
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -34,7 +32,6 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
 }
 
 $message = '';
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     // Validate CSRF Token
@@ -109,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         }
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -149,6 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         </div>
     <?php endif; ?>
 
+    <!-- Client-side error container for better accessibility -->
+    <div id="client-message" class="message error" style="display: none;" role="alert" aria-live="assertive"></div>
+
     <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <label for="file">Select file to upload (Max 5MB):</label>
@@ -182,8 +181,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                     feedback.innerHTML = '<div class="feedback-error">⚠️ File is too large (Max 5MB).</div>';
                     submitBtn.disabled = true;
                     this.setAttribute('aria-invalid', 'true');
-                    // Clear the file input so they can't submit it by enabling button via devtools easily?
-                    // No, keeping it is fine as we disable button.
                     return;
                 }
                 this.setAttribute('aria-invalid', 'false');
