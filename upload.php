@@ -1,12 +1,14 @@
 <?php
 
+session_start();
+
 require 'vendor/autoload.php';
 
 // Security Headers
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 
-session_start();
+
 
 // Generate CSRF Token if not exists
 if (empty($_SESSION['csrf_token'])) {
@@ -33,10 +35,12 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
 
 $message = '';
 
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-    // CSRF Validation
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
-        die('CSRF validation failed.');
+    // Validate CSRF Token
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("Error: Invalid CSRF token.");
     }
 
     $file = $_FILES['file'];
@@ -91,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                         // 'ContentType' => $mimeType // Optional: verify if needed
                     ]);
 
-                    $message = "Success! File uploaded to S3. Object URL: " . htmlspecialchars($result['ObjectURL']);
+                    $message = "Success! File uploaded to S3. Object URL: " . $result['ObjectURL'];
 
                 } catch (AwsException $e) {
                     // Log the error securely (not exposing to user in prod)
@@ -99,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                     $message = "Error uploading to S3: " . $e->getAwsErrorMessage();
                 } catch (Exception $e) {
                     error_log($e->getMessage());
-                    $message = "General Error: " . $e->getMessage();
+                    $message = "General Error: An unexpected error occurred.";
                 }
             }
         }
