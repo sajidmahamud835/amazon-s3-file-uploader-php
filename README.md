@@ -52,3 +52,13 @@ Open your browser and navigate to `http://localhost:8000/upload.php`.
 *   **Filename Sanitization:** Generates a unique filename (`uniqid`) to prevent overwrites and directory traversal attacks.
 *   **Secure Credentials:** Uses environment variables; no hardcoded keys.
 *   **Error Handling:** Catches AWS exceptions and hides stack traces from the user.
+
+## Changelog
+
+### 2026-01-08
+*   **Restoration:** Restored `main` branch from default.
+*   **Security:** Added robust CSRF protection using `hash_equals` and session tokens.
+*   **Optimization:** Improved MIME type validation performance using `isset()` instead of `in_array()`.
+*   **UX:** Added inline client-side validation for file size and type.
+*   **UX:** Added instant image preview before upload.
+*   **Cleanup:** Removed blocking `alert()` calls in favor of non-intrusive UI feedback.
