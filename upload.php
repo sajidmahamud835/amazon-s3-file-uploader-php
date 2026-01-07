@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require 'vendor/autoload.php';
 
 use Aws\S3\S3Client;
@@ -22,7 +24,17 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
 
 $message = '';
 
+// Generate CSRF token if it doesn't exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
+    // Validate CSRF Token
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("Error: Invalid CSRF token.");
+    }
+
     $file = $_FILES['file'];
 
     // 1. Validation: Check for upload errors
@@ -75,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                         // 'ContentType' => $mimeType // Optional: verify if needed
                     ]);
 
-                    $message = "Success! File uploaded to S3. Object URL: " . htmlspecialchars($result['ObjectURL']);
+                    $message = "Success! File uploaded to S3. Object URL: " . $result['ObjectURL'];
 
                 } catch (AwsException $e) {
                     // Log the error securely (not exposing to user in prod)
@@ -83,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                     $message = "Error uploading to S3: " . $e->getAwsErrorMessage();
                 } catch (Exception $e) {
                     error_log($e->getMessage());
-                    $message = "General Error: " . $e->getMessage();
+                    $message = "General Error: An unexpected error occurred.";
                 }
             }
         }
@@ -125,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     <?php endif; ?>
 
     <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <label for="file">Select file to upload (Max 5MB):</label>
         <input type="file" name="file" id="file" required accept=".jpg,.jpeg,.png,.gif,.pdf,.txt" aria-describedby="file-help">
         <small id="file-help" style="display: block; margin-bottom: 1rem; color: #666;">Allowed: JPG, PNG, GIF, PDF, TXT</small>
