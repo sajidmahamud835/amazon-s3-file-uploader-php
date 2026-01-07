@@ -4,6 +4,17 @@ session_start();
 
 require 'vendor/autoload.php';
 
+// Security Headers
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+
+
+
+// Generate CSRF Token if not exists
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 use Dotenv\Dotenv;
@@ -24,10 +35,7 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
 
 $message = '';
 
-// Generate CSRF token if it doesn't exist
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     // Validate CSRF Token
