@@ -4,14 +4,7 @@ session_start();
 
 require 'vendor/autoload.php';
 
-// Security Headers
-header('X-Frame-Options: DENY');
-header('X-Content-Type-Options: nosniff');
 
-// Generate CSRF Token if not exists
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
@@ -33,7 +26,12 @@ if (!$bucket || !$accessKeyId || !$secretAccessKey) {
 
 $message = '';
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
+<<<<<<< HEAD
     // Validate CSRF Token
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         die("Error: Invalid CSRF token.");
