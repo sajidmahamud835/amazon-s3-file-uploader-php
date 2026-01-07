@@ -11,9 +11,15 @@
         <p>Enter your AWS credentials to test the uploader.</p>
     </header>
 
-    <div class="notification warning slide-in">
-        ⚠️ <strong>Security Notice:</strong> Credentials are stored in your session only and are not logged or persisted.
-    </div>
+    <?php if (!empty($message)): ?>
+        <div class="notification <?php echo $messageType; ?> slide-in">
+            <?php echo $message; ?>
+        </div>
+    <?php else: ?>
+        <div class="notification warning slide-in">
+            ⚠️ <strong>Security Notice:</strong> Credentials are stored in your session only and are not logged or persisted.
+        </div>
+    <?php endif; ?>
 
     <form action="" method="post" class="config-form">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
@@ -40,7 +46,15 @@
         </div>
 
         <button type="submit" class="upload-btn">
-            <span>Connect & Continue</span>
+            <span>Test Connection & Continue</span>
+        </button>
+    </form>
+
+    <form action="" method="post" class="skip-form">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+        <input type="hidden" name="action" value="skip_config">
+        <button type="submit" class="skip-btn">
+            Skip for Later (View UI Only)
         </button>
     </form>
 

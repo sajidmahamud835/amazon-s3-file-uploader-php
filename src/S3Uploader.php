@@ -70,10 +70,23 @@ class S3Uploader
             return $result['ObjectURL'];
 
         } catch (AwsException $e) {
-            // Rethrow with clean message or handle?
-            throw new \RuntimeException("S3 Error: " . $e->getAwsErrorMessage());
+            // Rethrow AwsException for proper handling upstream
+            throw $e;
         } catch (\Exception $e) {
             throw new \RuntimeException("Upload Error: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Test the S3 connection by attempting to list bucket contents.
+     * @throws AwsException if credentials are invalid or bucket doesn't exist
+     */
+    public function testConnection(): bool
+    {
+        // Try to head the bucket - this validates credentials and bucket existence
+        $this->s3->headBucket([
+            'Bucket' => $this->bucket
+        ]);
+        return true;
     }
 }

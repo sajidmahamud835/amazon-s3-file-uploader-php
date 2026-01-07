@@ -1,15 +1,24 @@
 :root {
-    --primary: 250, 100%, 70%;
-    /* Light Purple */
-    --accent: 180, 100%, 50%;
-    /* Cyan */
-    --text: 220, 20%, 90%;
-    --bg: 240, 30%, 10%;
-    /* Dark Blue */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --error: 350, 80%, 60%;
-    --success: 150, 80%, 40%;
+    --primary-h: 250;
+    --primary-s: 85%;
+    --primary-l: 65%;
+    --accent-h: 175;
+    --accent-s: 85%;
+    --accent-l: 50%;
+    --text-h: 220;
+    --text-s: 15%;
+    --text-l: 95%;
+    --bg-h: 235;
+    --bg-s: 25%;
+    --bg-l: 12%;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --error-h: 0;
+    --error-s: 75%;
+    --error-l: 60%;
+    --success-h: 145;
+    --success-s: 70%;
+    --success-l: 45%;
 }
 
 * {
@@ -19,15 +28,18 @@
 }
 
 body {
-    font-family: 'Outfit', sans-serif;
-    background-color: rgb(var(--bg));
-    color: rgb(var(--text));
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: hsl(var(--bg-h), var(--bg-s), var(--bg-l));
+    color: hsl(var(--text-h), var(--text-s), var(--text-l));
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow-x: hidden;
     position: relative;
+    line-height: 1.6;
+    font-size: 16px;
+    letter-spacing: 0.01em;
 }
 
 /* Background Animation */
@@ -52,7 +64,7 @@ body {
 .blob-1 {
     width: 400px;
     height: 400px;
-    background: rgb(var(--primary));
+    background: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
     top: -100px;
     left: -100px;
 }
@@ -60,7 +72,7 @@ body {
 .blob-2 {
     width: 300px;
     height: 300px;
-    background: rgb(var(--accent));
+    background: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
     bottom: -50px;
     right: -50px;
     animation-delay: -5s;
@@ -86,17 +98,17 @@ body {
     }
 }
 
-/* Glass Conatiner */
+/* Glass Container */
 .glass-container {
     background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    padding: 2rem;
+    border-radius: 28px;
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.45);
+    padding: 2.5rem;
     width: 100%;
-    max-width: 500px;
+    max-width: 520px;
     margin: 1rem;
     position: relative;
     z-index: 10;
@@ -105,53 +117,60 @@ body {
 /* Header */
 .uploader-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .logo-icon svg {
-    width: 48px;
-    height: 48px;
-    color: rgb(var(--accent));
-    margin-bottom: 1rem;
+    width: 56px;
+    height: 56px;
+    color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+    margin-bottom: 1.25rem;
 }
 
 h1 {
     font-weight: 700;
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
 }
 
 .uploader-header p {
-    opacity: 0.7;
-    font-size: 0.9rem;
+    opacity: 0.75;
+    font-size: 1rem;
 }
 
 /* Form Zone */
 .drop-area {
     border: 2px dashed var(--glass-border);
-    border-radius: 16px;
-    padding: 3rem 1.5rem;
+    border-radius: 20px;
+    padding: 3.5rem 2rem;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.15);
 }
 
 .drop-area:hover,
 .drop-area.highlight {
-    border-color: rgb(var(--accent));
-    background: rgba(0, 255, 255, 0.05);
+    border-color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+    background: hsla(var(--accent-h), var(--accent-s), 50%, 0.08);
 }
 
 .icon-container {
-    margin-bottom: 1rem;
-    color: rgb(var(--primary));
+    margin-bottom: 1.25rem;
+    color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+}
+
+.drop-area h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
 }
 
 .browse-link {
-    color: rgb(var(--accent));
+    color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
     text-decoration: underline;
     cursor: pointer;
+    font-weight: 500;
 }
 
 .limit-text {
@@ -334,11 +353,38 @@ h1 {
 
 .demo-badge {
     display: inline-block;
-    background: rgba(var(--accent), 0.2);
-    color: rgb(var(--accent));
+    background: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.2);
+    color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.75rem;
     margin-bottom: 1rem;
     font-weight: 600;
+}
+
+/* Skip Button */
+.skip-form {
+    margin-top: 1rem;
+}
+
+.skip-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    background: transparent;
+    color: hsl(var(--text-h), var(--text-s), 70%);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skip-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.notification a {
+    color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+    text-decoration: underline;
 }

@@ -15,7 +15,13 @@
 
     <?php if (!empty($message)): ?>
         <div class="notification <?php echo $messageType; ?> slide-in">
-            <?php echo htmlspecialchars($message); ?>
+            <?php echo $message; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($isSkipMode) && $isSkipMode): ?>
+        <div class="notification warning slide-in">
+            ⚠️ <strong>Preview Mode:</strong> No credentials configured. Upload will fail. <a href="?reset=1">Configure credentials</a>
         </div>
     <?php endif; ?>
 

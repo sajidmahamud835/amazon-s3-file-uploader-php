@@ -1,6 +1,7 @@
 # CloudFlow S3 Uploader
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sajidmahamud835/amazon-s3-file-uploader-php)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-00C7B7?logo=render&logoColor=white)](https://cloudflow-s3-uploader.onrender.com)
 [![PHP 8.2](https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
