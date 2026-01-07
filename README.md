@@ -1,5 +1,7 @@
 # CloudFlow - Modern S3 File Uploader (PHP)
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sajidmahamud835/amazon-s3-file-uploader-php)
+
 A secure, modern, and beautifully designed file uploader for Amazon S3, built with PHP 8.2 and the AWS SDK.
 
 ## Features
@@ -7,60 +9,42 @@ A secure, modern, and beautifully designed file uploader for Amazon S3, built wi
 *   **Premium Glassmorphism UI:** Stunning visual design with animations and responsiveness.
 *   **Drag & Drop:** Intuitive file selection with drag and drop support.
 *   **Instant Previews:** Client-side image previews before uploading.
-*   **Secure:**
-    *   CSRF Protection.
-    *   Strict MIME type and file size validation.
-    *   Environment-based configuration.
-*   **Containerized:** Docker support for easy deployment.
-*   **Clean Architecture:** Refactored into a structured MVC-like pattern.
+*   **Demo Mode:** No AWS credentials? Users can enter their own for testing.
+*   **Secure:** CSRF protection, MIME validation, env-based configuration.
+*   **Containerized:** Docker & Render support for easy deployment.
 
-## Prerequisites
+## Demo Mode
 
-*   **Docker** (Recommended)
-*   *OR* **PHP 8.2+** and **Composer**
+If no AWS credentials are configured in the environment, the app will display a form where users can enter their own credentials for testing. **Credentials are stored in session only** and are never persisted or logged.
 
-## Quick Start (Docker)
+## Quick Start
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/sajidmahamud835/amazon-s3-file-uploader-php.git
-    cd amazon-s3-file-uploader-php
-    ```
+### Deploy to Render (One-Click)
 
-2.  **Configure Environment:**
-    ```bash
-    cp .env.example .env
-    # Edit .env with your AWS Credentials
-    ```
+Click the button above to deploy instantly to Render. Leave environment variables empty for demo mode.
 
-3.  **Run with Docker Compose:**
-    ```bash
-    docker-compose up -d --build
-    ```
+### Local (Docker)
 
-4.  **Open Browser:**
-    Navigate to `http://localhost:8080`.
+```bash
+git clone https://github.com/sajidmahamud835/amazon-s3-file-uploader-php.git
+cd amazon-s3-file-uploader-php
+cp .env.example .env  # Edit with your AWS credentials, or leave empty for demo mode
+docker-compose up -d --build
+```
+Open `http://localhost:8080`.
 
-## Manual Setup (Without Docker)
+### Local (PHP)
 
-1.  **Install Dependencies:**
-    ```bash
-    composer install
-    ```
-
-2.  **Run Built-in Server:**
-    ```bash
-    cd public
-    php -S localhost:8000
-    ```
-    *Note: The document root is now the `public/` directory.*
-
-3.  **Open Browser:**
-    Navigate to `http://localhost:8000`.
+```bash
+composer install
+cd public
+php -S localhost:8000
+```
+Open `http://localhost:8000`.
 
 ## Directory Structure
 
 *   `src/`: Core PHP logic (Config, S3Uploader).
-*   `public/`: Public entry entry point and assets.
+*   `public/`: Entry point and assets.
 *   `templates/`: HTML views.
-*   `Dockerfile` & `docker-compose.yml`: DevOps configuration.
+*   `Dockerfile`, `docker-compose.yml`, `render.yaml`: DevOps configs.

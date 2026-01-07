@@ -14,7 +14,12 @@ header('X-Content-Type-Options: nosniff');
 try {
     Config::load(__DIR__ . '/../');
 } catch (\Exception $e) {
-    die("Configuration Error: " . $e->getMessage());
+    // Silently continue - demo mode will handle missing config
+}
+
+// Enable demo mode if session credentials exist
+if (Config::isDemoMode()) {
+    Config::enableDemoMode();
 }
 
 // Generate CSRF Token
@@ -25,8 +30,26 @@ if (empty($_SESSION['csrf_token'])) {
 $message = '';
 $messageType = '';
 
+// Handle credential submission (demo mode)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'set_credentials') {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $message = "Error: Invalid CSRF token.";
+        $messageType = 'error';
+    } else {
+        Config::setSessionCredentials([
+            'bucket' => $_POST['bucket'] ?? '',
+            'region' => $_POST['region'] ?? 'us-east-1',
+            'access_key' => $_POST['access_key'] ?? '',
+            'secret_key' => $_POST['secret_key'] ?? '',
+        ]);
+        // Redirect to avoid form resubmission
+        header('Location: /');
+        exit;
+    }
+}
+
+// Handle file upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-    // CSRF Check
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         $message = "Error: Invalid CSRF token.";
         $messageType = 'error';
@@ -39,10 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                 Config::require('AWS_SECRET_ACCESS_KEY')
             );
 
-            // Optional: You can customize allowed types here if needed, or rely on defaults
             $url = $uploader->upload($_FILES['file']);
             
-            $message = "Success! File uploaded to: " . $url;
+            $message = "Success! File uploaded to S3.";
             $messageType = 'success';
 
         } catch (\RuntimeException $e) {
@@ -55,20 +77,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     }
 }
 
-// Render View
-// Simple template engine
+// Determine which view to show
+$showConfigForm = !Config::hasAwsCredentials();
+
 $data = [
     'message' => $message,
     'messageType' => $messageType,
-    'csrf_token' => $_SESSION['csrf_token']
+    'csrf_token' => $_SESSION['csrf_token'],
+    'isDemoMode' => Config::isDemoMode()
 ];
 
-// Extract data to variables for the view
 extract($data);
 
-// Buffer output to include layout
 ob_start();
-require __DIR__ . '/../templates/upload_form.php';
+if ($showConfigForm) {
+    require __DIR__ . '/../templates/config_form.php';
+} else {
+    require __DIR__ . '/../templates/upload_form.php';
+}
 $content = ob_get_clean();
 
 require __DIR__ . '/../templates/layout.php';
